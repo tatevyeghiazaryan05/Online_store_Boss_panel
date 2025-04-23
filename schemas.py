@@ -10,3 +10,17 @@ class BossSignUpSchema(BaseModel):
 class BossLoginSchema(BaseModel):
     email: EmailStr
     password: str
+
+
+class BossNameChangeSchema(BaseModel):
+    name: str
+
+
+class BossPasswordChangeSchema(BaseModel):
+    password: str
+
+
+class BossPasswordRecoverSchema(BaseModel):
+    code: str
+    new_password: str
+
