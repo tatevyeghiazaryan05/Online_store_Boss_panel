@@ -10,17 +10,17 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated="auto")
 secret_key = "sdfghjkmdxcfvgbhnjkm,l"
 
 
-def create_access_token(user_data: dict):
-    user_data["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=15)
-    token = jwt.encode(user_data, secret_key, "HS256")
+def create_access_token(boss_data: dict):
+    boss_data["exp"] = datetime.datetime.utcnow() + datetime.timedelta(minutes=30)
+    token = jwt.encode(boss_data, secret_key, "HS256")
     return token
 
 
 def verify_access_token(token: str):
-    user_data = jwt.decode(token, secret_key, algorithms=["HS256"])
-    return user_data
+    boss_data = jwt.decode(token, secret_key, algorithms=["HS256"])
+    return boss_data
 
 
-def get_current_user(token=Depends(oauth2_schema)):
+def get_current_boss(token=Depends(oauth2_schema)):
     data = verify_access_token(token)
     return data
