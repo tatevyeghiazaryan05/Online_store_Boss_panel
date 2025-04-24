@@ -135,4 +135,10 @@ def get_users_by_month(year: int, month: int):
     return {"message": f"{users_count} users registered in {year}-{month}"}
 
 
+@bossrouter.get("/api/boss/see/all/users/amount/year/{year}")
+def get_users_by_year(year: int):
+    main.cursor.execute("""SELECT COUNT(id) AS count FROM users WHERE EXTRACT(YEAR FROM created_at) = %s""",
+                        (year,))
+    users_count = main.cursor.fetchone()["count"]
+    return {"message": f"{users_count} users registered in {year}"}
 
