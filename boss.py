@@ -4,13 +4,13 @@ from schemas import BossNameChangeSchema, BossPasswordChangeSchema, BossPassword
 from security import get_current_boss, pwd_context
 from pydantic import EmailStr
 from email_service import send_verification_email
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 
-boss_router = APIRouter()
+bossrouter = APIRouter()
 
 
-@boss_router.put("/api/boss/change/name")
+@bossrouter.put("/api/boss/change/name")
 def change_boss_name(data: BossNameChangeSchema, token=Depends(get_current_boss)):
     boss_id = token["id"]
     main.cursor.execute("UPDATE boss SET name = %s WHERE id = %s", (data.name, boss_id))
@@ -18,7 +18,7 @@ def change_boss_name(data: BossNameChangeSchema, token=Depends(get_current_boss)
     return "Updated successfully!!"
 
 
-@boss_router.put("/api/boss/change/password")
+@bossrouter.put("/api/boss/change/password")
 def change_boss_password(data: BossPasswordChangeSchema, token=Depends(get_current_boss)):
     boss_id = token["id"]
     new_hashed_password = pwd_context.hash(data.password)
@@ -28,7 +28,7 @@ def change_boss_password(data: BossPasswordChangeSchema, token=Depends(get_curre
     return "Password updated successfully!!"
 
 
-@boss_router.get("/api/boss/my-account-info")
+@bossrouter.get("/api/boss/my-account-info")
 def get_boss_my_account_info(token=Depends(get_current_boss)):
     boss_id = token["id"]
     main.cursor.execute("SELECT email,name FROM boss WHERE id=%s",
@@ -37,7 +37,7 @@ def get_boss_my_account_info(token=Depends(get_current_boss)):
     return data
 
 
-@boss_router.get("/api/boss/for/forgot/password/code/{email}")
+@bossrouter.get("/api/boss/for/forgot/password/code/{email}")
 def boss_forgot_password_code(email: EmailStr):
     try:
         main.cursor.execute("SELECT * FROM boss WHERE email=%s",
@@ -62,7 +62,7 @@ def boss_forgot_password_code(email: EmailStr):
     main.conn.commit()
 
 
-@boss_router.post("/api/boss/forgot/password")
+@bossrouter.post("/api/boss/forgot/password")
 def boss_forgot_password(data: BossPasswordRecoverSchema):
     code = data.code
 
@@ -108,7 +108,7 @@ def boss_forgot_password(data: BossPasswordRecoverSchema):
     return "Changed password successfully!!"
 
 
-@boss_router.put("/api/boss/boss/password/recovery")
+@bossrouter.put("/api/boss/boss/password/recovery")
 def password_recovery(data: BossPasswordChangeSchema, token=Depends(get_current_boss)):
     boss_id = token["id"]
     new_password = pwd_context.hash(data.password)
@@ -116,3 +116,17 @@ def password_recovery(data: BossPasswordChangeSchema, token=Depends(get_current_
                         (new_password, boss_id))
     main.conn.commit()
     return "New password updated successfully!!"
+
+
+@bossrouter.get("/api/boss/see/all/users/amount/today")
+def get_users_today():
+    today = date.today()
+    main.cursor.execute("""SELECT COUNT(id) AS count FROM users WHERE DATE(created_at) = %s""",
+                        (today,))
+    users_count = main.cursor.fetchone()["count"]
+    return {"message": f"In your store are {users_count} users registered today ({today})"}
+
+
+
+
+

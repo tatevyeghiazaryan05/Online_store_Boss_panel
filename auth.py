@@ -4,14 +4,14 @@ from schemas import BossSignUpSchema, BossLoginSchema
 from security import pwd_context, create_access_token
 
 
-bossrouter = APIRouter()
+authrouter = APIRouter()
 
 
-@bossrouter.post("/api/boss/auth/sign-up")
+@authrouter.post("/api/boss/auth/sign-up")
 def user_signup(sign_up_data: BossSignUpSchema):
-    name = BossSignUpSchema.name
-    email = BossSignUpSchema.email
-    password = BossSignUpSchema.password
+    name = sign_up_data.name
+    email = sign_up_data.email
+    password = sign_up_data.password
 
     hashed_password = pwd_context.hash(password)
 
@@ -22,7 +22,7 @@ def user_signup(sign_up_data: BossSignUpSchema):
     return "Sign Up Successfully!!"
 
 
-@bossrouter.post("/api/boss/auth/login")
+@authrouter.post("/api/boss/auth/login")
 def user_login(login_data: BossLoginSchema):
     email = login_data.email
     password = login_data.password
