@@ -127,6 +127,12 @@ def get_users_today():
     return {"message": f"In your store are {users_count} users registered today ({today})"}
 
 
+@bossrouter.get("/api/boss/see/all/users/amount/month/{year}/{month}")
+def get_users_by_month(year: int, month: int):
+    main.cursor.execute("SELECT COUNT(id) AS count FROM users WHERE EXTRACT(YEAR FROM created_at) = %s AND EXTRACT(MONTH FROM created_at) = %s",
+                        (year, month))
+    users_count = main.cursor.fetchone()["count"]
+    return {"message": f"{users_count} users registered in {year}-{month}"}
 
 
 
