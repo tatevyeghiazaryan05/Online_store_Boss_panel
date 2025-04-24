@@ -142,3 +142,10 @@ def get_users_by_year(year: int):
     users_count = main.cursor.fetchone()["count"]
     return {"message": f"{users_count} users registered in {year}"}
 
+
+@bossrouter.delete("/api/boss/dismiss/admin/{admin_id}")
+def dismiss_admin(admin_id):
+    main.cursor.execute("DELETE  FROM admins WHERE id = %s",
+                        (admin_id,))
+    main.conn.commit()
+    return f"Admin with {admin_id} id was deleted"
